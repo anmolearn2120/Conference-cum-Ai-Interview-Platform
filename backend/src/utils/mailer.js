@@ -30,7 +30,7 @@ export const transporter = nodemailer.createTransport({
   port: 465,
   secure: true, // Render par true (port 465) ya false (port 587) try karo
   auth: {
-    user: process.env.EMAIL_USER,
+    user: process.env.EMAIL,
     pass: process.env.EMAIL_PASS,
   },
   tls: {
