@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../frontend"
+		}
+	],
+	"settings": {
+		"chat.tools.edits.autoApprove": {
+			"**/.vscode/*.json": true,
+			"**/{package.json,server.xml,build.rs,web.config,.gitattributes,.env}": true,
+			"**/*.{code-workspace,csproj,fsproj,vbproj,vcxproj,proj,targets,props}": true
+		},
+		"chat.tools.eligibleForAutoApproval": {
+			"*": true
+		},
+		"chat.tools.terminal.blockDetectedFileWrites": "outsideWorkspace",
+		"chat.tools.terminal.enableAutoApprove": true
+	}
+}

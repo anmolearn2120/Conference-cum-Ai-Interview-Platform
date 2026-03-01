@@ -1,0 +1,148 @@
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f1a, #1c1c2e);
+  color: white;
+  padding: 40px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.nav-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-right button {
+  padding: 8px 16px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dashboard-cards {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+}
+
+.card {
+  background: #1f1f2e;
+  padding: 40px;
+  border-radius: 16px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+
+.card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 15px;
+  background: #2c2c40;
+  color: white;
+}
+
+.card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background: #4f46e5;
+}
+
+/* Modal */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-card {
+  background: #1f1f2e;
+  padding: 40px;
+  border-radius: 16px;
+  width: 400px;
+  text-align: center;
+}
+
+.meeting-code {
+  font-size: 2rem;
+  margin: 20px 0;
+  letter-spacing: 3px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #2c2c40;
+  color: white;
+  cursor: pointer;
+}
+
+.modal-buttons button:hover {
+  background: #6366f1;
+}
+
+.join-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+}
+
+.close-text {
+  margin-top: 15px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+
+.activity-section {
+  margin-top: 80px;
+}
+
+.activity-section h3 {
+  margin-bottom: 20px;
+}
+
+.activity-card {
+  background: #1f1f2e;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+}

@@ -1,0 +1,110 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+
+
+
+
+
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f1a, #1c1c2e);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  
+}
+
+.auth-card {
+  background: #1f1f2e;
+  padding: 40px;
+  width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  text-align: center;
+  color: white;
+}
+
+.auth-card h2 {
+  margin-bottom: 25px;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-card input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: #2c2c40;
+  color: white;
+}
+
+.auth-card input:focus {
+  border: 1px solid #6366f1;
+}
+
+.auth-card button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.auth-card button:hover {
+  background: #4f46e5;
+}
+
+.error-text {
+  color: #ff4d4d;
+  margin-bottom: 10px;
+}
+
+.switch-text {
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.switch-text a {
+  color: #6366f1;
+  text-decoration: none;
+}
+
+
+
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+}
+
+.forgot-link {
+  color: #999;
+  cursor: pointer;
+}
+
+.otp-link {
+  color: #6366f1;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.otp-link:hover {
+  text-decoration: underline;
+}
