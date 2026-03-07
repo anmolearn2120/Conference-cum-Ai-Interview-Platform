@@ -31,6 +31,7 @@ export default function AiMeetingRoom () {
 const timerInterval = useRef(null);
 const aiStateRef = useRef("idle");
 const hasSpokenRef = useRef(false);
+const isMountedRef = useRef(true); // 👈 Ye track karega ki component zinda hai ya nahi
     
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [canSpeak, setCanSpeak] = useState(false);
@@ -527,17 +528,26 @@ const startNoResponseTimer = () => {
   };
 
   recognition.onend = () => {
-    console.log("🛑 Speech recognition ended (Chrome stopped it)");
+  console.log("🛑 Speech recognition ended (Chrome stopped it)");
 
-    if (answerSentRef.current) return;
-    if (aiStateRef.current !== "listening") return;
+  // 🛡️ NAYA CHECK: Agar user page chhod chuka hai, toh chup chaap exit kar jao!
+  if (!isMountedRef.current) {
+    console.log("Component unmounted, completely shutting down mic.");
+    return;
+  }
 
-    setTimeout(() => {
-      if (!answerSentRef.current && aiStateRef.current === "listening") {
-        startListening(); 
-      }
-    }, 300);
-  };
+  if (answerSentRef.current) return;
+  if (aiStateRef.current !== "listening") return;
+
+  setTimeout(() => {
+    // 🛡️ Double Check: 300ms ke baad bhi check karo ki user gaya toh nahi
+    if (!isMountedRef.current) return;
+
+    if (!answerSentRef.current && aiStateRef.current === "listening") {
+      startListening(); 
+    }
+  }, 300);
+};
 
   recognitionRef.current = recognition;
   
@@ -572,45 +582,42 @@ const startNoResponseTimer = () => {
   };
 
   const cleanup = () => {
+  // 🔴 1. KILL SWITCH ON: Ab koi bhi naya process start nahi hoga
+  isMountedRef.current = false; 
+  aiStateRef.current = "idle"; // State ko bhi idle kar do
 
+  if (timerInterval.current) {
+    clearInterval(timerInterval.current);
+  }
 
-    if (timerInterval.current) {
-  clearInterval(timerInterval.current);
-}
+  speechSynthesis.cancel();
 
+  // 🔴 2. STOP ki jagah ABORT use karo
+  if (recognitionRef.current) {
+    try {
+      recognitionRef.current.abort(); // Hard stop, no processing
+    } catch {}
+  }
 
-    // stop AI speech
-    speechSynthesis.cancel();
+  if (localStream.current) {
+    localStream.current.getTracks().forEach((track) => track.stop());
+  }
 
-    // stop speech recognition
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
+  if (attentionInterval.current) {
+    clearInterval(attentionInterval.current);
+  }
 
-    // stop camera
-    if (localStream.current) {
-      localStream.current.getTracks().forEach((track) => track.stop());
-    }
+  Object.values(peerConnections.current).forEach((pc) => pc.close());
+  peerConnections.current = {};
 
-    if (attentionInterval.current) {
-      clearInterval(attentionInterval.current);
-    }
-
-    // close peer connections
-    Object.values(peerConnections.current).forEach((pc) => pc.close());
-
-    peerConnections.current = {};
-
-    // remove socket listeners
   aisocket.off("ai:speaking");
-aisocket.off("ai:thinking");
-aisocket.off("ai:timer-started");
-aisocket.off("ai-error");
-aisocket.off("ai-completed");
+  aisocket.off("ai:thinking");
+  aisocket.off("ai:timer-started");
+  aisocket.off("ai-error");
+  aisocket.off("ai-completed");
 
-    // disconnect socket
-    aisocket.disconnect();
-  };
+  aisocket.disconnect();
+};
 
   const leaveInterview = () => {
 
