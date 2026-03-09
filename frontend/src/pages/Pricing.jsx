@@ -102,7 +102,7 @@ export default function Pricing() {
                   </a>
                 ) : (
                   <Link to="/signup" className="btn-primary pricing-cta">
-                    Get Started
+                    Join Us!
                   </Link>
                 )}
               </article>
