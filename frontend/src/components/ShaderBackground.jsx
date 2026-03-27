@@ -104,27 +104,56 @@ const fsSource = `
 
 const loadShader = (gl, type, source) => {
   const shader = gl.createShader(type);
+  if (!shader) {
+    console.error("Failed to create shader.");
+    return null;
+  }
+
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
+
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error("Shader compile error: ", gl.getShaderInfoLog(shader));
+    console.error(
+      "Shader compile error:",
+      gl.getShaderInfoLog(shader) ?? "No shader info log available."
+    );
     gl.deleteShader(shader);
     return null;
   }
+
   return shader;
 };
 
 const initShaderProgram = (gl, vs, fs) => {
   const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vs);
   const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fs);
+  if (!vertexShader || !fragmentShader) {
+    return null;
+  }
+
   const shaderProgram = gl.createProgram();
+  if (!shaderProgram) {
+    console.error("Failed to create shader program.");
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+    return null;
+  }
+
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
+
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     console.error("Shader program link error: ", gl.getProgramInfoLog(shaderProgram));
+    gl.deleteProgram(shaderProgram);
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
     return null;
   }
+
+  gl.deleteShader(vertexShader);
+  gl.deleteShader(fragmentShader);
+
   return shaderProgram;
 };
 
@@ -138,7 +167,17 @@ function ShaderBackground() {
     if (!gl) { console.warn("WebGL not supported."); return; }
 
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+    if (!shaderProgram) {
+      return;
+    }
+
     const positionBuffer = gl.createBuffer();
+    if (!positionBuffer) {
+      console.error("Failed to create position buffer.");
+      gl.deleteProgram(shaderProgram);
+      return;
+    }
+
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     const positions = [-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -189,7 +228,8 @@ function ShaderBackground() {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(rafId);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      gl.deleteBuffer(positionBuffer);
+      gl.deleteProgram(shaderProgram);
     };
   }, []);
 

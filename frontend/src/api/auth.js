@@ -15,3 +15,7 @@ export const sendLoginOtp = (data) =>
 // Verify OTP
 export const verifyLoginOtp = (data) =>
   API.post("/api/auth/login/otp/verify", data);
+
+// google login
+export const googleLogin = (token) =>
+  API.post("/api/auth/google", { token });

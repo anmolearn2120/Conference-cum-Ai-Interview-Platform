@@ -1,9 +1,11 @@
 ﻿import { useContext, useState, useRef } from "react";
+import { GoogleLogin } from "@react-oauth/google";
+
 import { useNavigate, Link } from "react-router-dom";
 import { motion, useMotionValue, useMotionTemplate, useInView } from "framer-motion";
 import "../styles/Auth.css";
 
-import { loginWithPassword, sendLoginOtp, verifyLoginOtp } from "../api/auth";
+import { loginWithPassword, sendLoginOtp, verifyLoginOtp, googleLogin } from "../api/auth";
 import { AuthContext } from "../context/AuthContext";
 import AuthVisual from "../components/AuthVisual";
 import OtpInput from "../components/OtpInput";
@@ -12,23 +14,23 @@ import OtpInput from "../components/OtpInput";
 export default function Login() {
 
   const navigate = useNavigate();
-  const [formData , setformData] = useState({
-    email : "",
-    password : "",
-    otp : ""
+  const [formData, setformData] = useState({
+    email: "",
+    password: "",
+    otp: ""
 
   });
 
-  const [isotpmode , setisotpmode] = useState(false);
-  const [otpsent , setotpsent] = useState(false);
-  const [loading , setloading] = useState(false);
+  const [isotpmode, setisotpmode] = useState(false);
+  const [otpsent, setotpsent] = useState(false);
+  const [loading, setloading] = useState(false);
   const [error, seterror] = useState("");
-  const {login} = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setformData({
       ...formData,
-      [e.target.name] : e.target.value
+      [e.target.name]: e.target.value
     });
   }
 
@@ -36,40 +38,38 @@ export default function Login() {
     e.preventDefault();
     setloading(true);
     seterror("");
-    try{
+    try {
       const response = await loginWithPassword({
-        email : formData.email,
-        password : formData.password
+        email: formData.email,
+        password: formData.password
       })
 
       login(response.data);
       navigate("/dashboard");
 
     }
-    catch(err)
-    {
+    catch (err) {
       seterror(err.response?.data?.message || " Login With Password Failed ");
     }
 
     setloading(false);
   }
 
-  const handleSendOtp = async ()=> {
+  const handleSendOtp = async () => {
 
     setloading(true);
     seterror("");
 
-    try{
+    try {
       await sendLoginOtp({
-        email : formData.email
+        email: formData.email
       })
 
       setotpsent(true);
 
 
     }
-    catch(err)
-    {
+    catch (err) {
       seterror(err.response?.data?.message || "Send OTP Failed");
     }
     setloading(false);
@@ -83,20 +83,34 @@ export default function Login() {
     try {
 
       const response = await verifyLoginOtp({
-        email : formData.email,
-        otp : formData.otp
+        email: formData.email,
+        otp: formData.otp
       })
 
       login(response.data);
       navigate("/dashboard");
-      
+
     } catch (err) {
       seterror(err.response?.data?.message || "OTP verification Failed");
-      
+
     }
     setloading(false);
   }
 
+
+  // google login
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const response = await googleLogin(credentialResponse.credential);
+
+      //  use context login
+      login(response.data);
+
+      navigate("/dashboard");
+    } catch (error) {
+      alert(error.response?.data?.message || "Login failed");
+    }
+  };
   return (
     <div className="auth-page">
       {/* Left decorative panel */}
@@ -138,53 +152,63 @@ export default function Login() {
 
           {/* Password login */}
           {!isotpmode && (
-            <form className="auth-form" onSubmit={handleloginwithPassword}>
-              <RevealField delay={0.1}>
-                <GlowInput>
-                  <input
-                    className="auth-input"
-                    name="email"
-                    type="email"
-                    placeholder="Email address"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </GlowInput>
-              </RevealField>
+            <>
+              <form className="auth-form" onSubmit={handleloginwithPassword}>
+                <RevealField delay={0.1}>
+                  <GlowInput>
+                    <input
+                      className="auth-input"
+                      name="email"
+                      type="email"
+                      placeholder="Email address"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </GlowInput>
+                </RevealField>
 
-              <RevealField delay={0.15}>
-                <GlowInput>
-                  <input
-                    className="auth-input"
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </GlowInput>
-              </RevealField>
+                <RevealField delay={0.15}>
+                  <GlowInput>
+                    <input
+                      className="auth-input"
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </GlowInput>
+                </RevealField>
 
-              <RevealField delay={0.2}>
-                <div className="auth-links-row">
-                  <span className="auth-link">Forgot password?</span>
-                  <span
-                    className="auth-link auth-link--accent"
-                    onClick={() => setisotpmode(true)}
-                  >
-                    Login with OTP
-                  </span>
+                <RevealField delay={0.2}>
+                  <div className="auth-links-row">
+                    <span className="auth-link">Forgot password?</span>
+                    <span
+                      className="auth-link auth-link--accent"
+                      onClick={() => setisotpmode(true)}
+                    >
+                      Login with OTP
+                    </span>
+                  </div>
+                </RevealField>
+
+                <RevealField delay={0.25}>
+                  <button className="auth-btn" type="submit" disabled={loading}>
+                    {loading ? "Signing in..." : "Sign In"}
+                  </button>
+                </RevealField>
+              </form>
+              <RevealField delay={0.28}>
+                <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
+                  <GoogleLogin
+                    onSuccess={handleGoogleLogin}
+                    onError={() => console.log("Google Login Failed")}
+                  />
                 </div>
               </RevealField>
-
-              <RevealField delay={0.25}>
-                <button className="auth-btn" type="submit" disabled={loading}>
-                  {loading ? "Signing in..." : "Sign In"}
-                </button>
-              </RevealField>
-            </form>
+            </>
           )}
 
           {/* OTP login */}
@@ -237,12 +261,20 @@ export default function Login() {
                     <OtpInput
                       onComplete={(otp) => {
                         setformData(prev => ({ ...prev, otp }));
-                        handleVerifyOtp({ preventDefault: () => {} });
+                        handleVerifyOtp({ preventDefault: () => { } });
                       }}
                     />
                   </RevealField>
                 </form>
               )}
+              <RevealField delay={0.28}>
+                <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
+                  <GoogleLogin
+                    onSuccess={handleGoogleLogin}
+                    onError={() => console.log("Google Login Failed")}
+                  />
+                </div>
+              </RevealField>
             </>
           )}
 

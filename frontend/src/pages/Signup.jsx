@@ -2,31 +2,32 @@
 import "../styles/Auth.css";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, useMotionValue, useMotionTemplate, useInView } from "framer-motion";
+import { GoogleLogin } from "@react-oauth/google";
 
-import { signupUser } from "../api/auth";
+import { googleLogin, signupUser } from "../api/auth";
 import { AuthContext } from "../context/AuthContext";
 import AuthVisual from "../components/AuthVisual";
 
 
 export default function Signup() {
 
-  const [formData , setformData] = useState({
-    name : "",
-    username : "",
-    email : "",
-    password : ""
+  const [formData, setformData] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: ""
   });
-  const [loading , setloading] = useState(false);
+  const [loading, setloading] = useState(false);
 
   const [error, seterror] = useState("");
   const navigate = useNavigate();
 
-  const {login} = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
-  const handleChange =(e) => {
+  const handleChange = (e) => {
     setformData({
       ...formData,
-      [e.target.name] : e.target.value
+      [e.target.name]: e.target.value
     });
   }
 
@@ -36,7 +37,7 @@ export default function Signup() {
     setloading(true);
     seterror("");
 
-    try{
+    try {
 
       const response = await signupUser(formData);
       const data = response.data;
@@ -45,14 +46,25 @@ export default function Signup() {
       navigate("/dashboard");
 
     }
-    catch(err)
-    {
-      seterror(err.response?.data?.message || "Signup Failed"); 
+    catch (err) {
+      seterror(err.response?.data?.message || "Signup Failed");
 
     }
     setloading(false);
   }
+  // google login
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const response = await googleLogin(credentialResponse.credential);
 
+      //  use context login
+      login(response.data);
+
+      navigate("/dashboard");
+    } catch (error) {
+      alert(error.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
     <div className="auth-page">
@@ -150,6 +162,17 @@ export default function Signup() {
               </button>
             </RevealField>
           </form>
+
+          <RevealField delay={0.32}>
+            <div style={{ textAlign: "center", marginTop: "15px" }}>
+              <p style={{ marginBottom: "10px", opacity: 0.7 }}>or</p>
+
+              <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={() => console.log("Google Login Failed")}
+              />
+            </div>
+          </RevealField>
 
           <RevealField delay={0.35}>
             <p className="auth-switch">

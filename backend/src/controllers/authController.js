@@ -1,10 +1,15 @@
 import { User } from "../models/user.model.js";
+import { OAuth2Client } from "google-auth-library";
+
 
 import { OTP } from "../models/otp.model.js";
 // import { createTransporter } from "../utils/mailer.js";
 import { transporter } from "../utils/mailer.js";
 
 import jwt from "jsonwebtoken";
+
+// generate auth client
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 //generate otp
 
@@ -157,3 +162,54 @@ export const verifyLoginOtp = async (req, res) => {
     res.status(500).json({ message: "Verify OTP Failed" });
   }
 };
+
+
+//google login and signup
+export const googleLogin = async (req, res) => {
+  try {
+
+    const { token } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { email, name, sub } = payload;
+    let user = await User.findOne({
+      $or: [{ email }, { googleId: sub }],
+    });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        username: email.split('@')[0],
+        provider: 'google',
+        googleId: sub,
+        isVerified: true
+      });
+
+    }
+    else {
+      // 🔵 LOGIN (existing user)
+
+      // agar pehle local account tha → upgrade kar
+      if (user.provider === "local") {
+        user.provider = "google";
+        user.googleId = sub;
+        user.isVerified = true;
+        await user.save();
+      }
+    }
+
+    res.status(200).json({
+      message: "Google Login Successful",
+      token: generateToken(user),
+      user,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Google Login Failed" });
+  }
+}
