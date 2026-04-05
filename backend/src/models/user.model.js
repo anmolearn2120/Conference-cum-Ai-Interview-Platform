@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
         default: "candidate"
 
     },
+    hasLoginAccess: {
+        type: Boolean,
+        default: true
+    },
     isVerified: {
         type: Boolean,
         default: false

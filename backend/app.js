@@ -22,6 +22,7 @@ import aiInterviewRoutes from "./src/routes/aiInterview.routes.js";
 
 import meetingRoutes from "./src/routes/meeting.routes.js";
 import activityRoutes from "./src/routes/activity.routes.js";
+import adminRoutes from "./src/routes/admin.routes.js";
 import { transporter } from "./src/utils/mailer.js";
 import AIInterview from "./src/models/aiInterview.model.js";
 import Resume from "./src/models/resume.model.js";
@@ -54,6 +55,7 @@ app.use("/api/auth", userRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/resume", resumeRoutes);
+app.use("/admin", adminRoutes);
 
 
 app.use("/api/ai", aiInterviewRoutes);

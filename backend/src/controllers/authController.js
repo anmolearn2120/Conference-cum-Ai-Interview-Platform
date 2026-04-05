@@ -65,6 +65,10 @@ export const LoginwithPassword = async (req, res) => {
     if (!user)
       return res.status(400).json({ message: "User Not Found, Please Signup" });
 
+    if (!user.hasLoginAccess) {
+      return res.status(403).json({ message: "Your email does not have login access" });
+    }
+
     // check password
 
     const isMatch = await user.comparePassword(password);
@@ -91,6 +95,10 @@ export const sendLoginOtp = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user)
       return res.status(400).json({ message: "User Not Found, Please Signup" });
+
+    if (!user.hasLoginAccess) {
+      return res.status(403).json({ message: "Your email does not have login access" });
+    }
 
     // generate opt for the user
     const otp = generateOtp();
@@ -147,6 +155,9 @@ export const verifyLoginOtp = async (req, res) => {
 
     const user = await User.findOne({ email });
 
+    if (!user || !user.hasLoginAccess)
+      return res.status(403).json({ message: "Your email does not have login access" });
+
     await OTP.deleteOne({ email }); // ye line isliye hai kyuki
     // ek baar otp verify ho jaye toh us otp ko database
     // se delete kar dena chahiye taki wo dobara use na ho sake
@@ -191,6 +202,10 @@ export const googleLogin = async (req, res) => {
 
     }
     else {
+      if (!user.hasLoginAccess) {
+        return res.status(403).json({ message: "Your email does not have login access" });
+      }
+
       // 🔵 LOGIN (existing user)
 
       // agar pehle local account tha → upgrade kar

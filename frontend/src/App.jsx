@@ -9,11 +9,13 @@ import MeetingRoom from "./pages/MeetingRoom";
 import Activity from "./pages/Activity";
 import Pricing from "./pages/Pricing";
 import ProtectedRoute from "./components/protectedRoutes";
+import AdminRoute from "./components/AdminRoute";
 import Background from "./components/Background";
 import Navbar from "./components/Navbar";
 import AIActivity from "./pages/AIActivity";
 import ResumeUpload from "./pages/ResumeUpload.jsx";
 import AiMeetingRoom from "./pages/AiMeetingRoom.jsx"
+import Admin from "./pages/Admin.jsx";
 
 function App() {
   return (
@@ -26,6 +28,15 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/pricing" element={<Pricing />} />
+
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
+            }
+          />
 
           {/* Protected Routes */}
           <Route

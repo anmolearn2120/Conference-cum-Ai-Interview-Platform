@@ -23,8 +23,8 @@ export const createAIInterview = async (req, res) => {
 
     const { jobRole, note } = req.body;
     const aiCode = generateAiCode();
-    // 5 days = 5 din * 24 ghante * 60 minute * 60 second * 1000 milliseconds
-    const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+    // 7 days = 7 din * 24 ghante * 60 minute * 60 second * 1000 milliseconds
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const interview = await AIInterview.create({
       aiCode,
       expiresAt,
