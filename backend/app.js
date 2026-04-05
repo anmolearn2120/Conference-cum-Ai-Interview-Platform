@@ -27,6 +27,8 @@ import AIInterview from "./src/models/aiInterview.model.js";
 import Resume from "./src/models/resume.model.js";
 import { generateInterviewScore } from "./src/services/interviewService.js";
 import  parseScore  from "./src/utils/parseScore.js";
+import { protect } from "./src/middlewares/auth.js";
+import { requestFreeAccess } from "./src/controllers/authController.js";
 
 const app = express();
 
@@ -55,6 +57,7 @@ app.use("/api/resume", resumeRoutes);
 
 
 app.use("/api/ai", aiInterviewRoutes);
+app.post("/request-free-access", protect, requestFreeAccess);
 
 //console.log("MONGO_URI:", MONGO_URI); // Debugging line to check if MONGO_URI is loaded
 
