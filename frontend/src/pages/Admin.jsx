@@ -30,7 +30,7 @@ export default function Admin() {
     setError("");
 
     try {
-      const response = await API.get("/admin/users");
+      const response = await API.get("/api/admin/users");
       const fetchedUsers = response.data?.users || [];
 
       setUsers(fetchedUsers);
@@ -67,7 +67,7 @@ export default function Admin() {
     setStatusMessage("");
 
     try {
-      await API.post("/admin/users", {
+      await API.post("/api/admin/users", {
         name: newUserForm.name.trim(),
         email: newUserForm.email.trim(),
         role: newUserForm.role,
@@ -103,7 +103,7 @@ export default function Admin() {
     setStatusMessage("");
 
     try {
-      await API.patch(`/admin/users/${targetUser._id}/role`, {
+      await API.patch(`/api/admin/users/${targetUser._id}/role`, {
         role: selectedRole,
       });
 

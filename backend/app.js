@@ -55,6 +55,7 @@ app.use("/api/auth", userRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/resume", resumeRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/admin", adminRoutes);
 
 
