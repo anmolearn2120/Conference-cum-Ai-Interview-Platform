@@ -213,3 +213,34 @@ export const googleLogin = async (req, res) => {
     res.status(500).json({ message: "Google Login Failed" });
   }
 }
+
+export const requestFreeAccess = async (req, res) => {
+  try {
+    const { name, email, purpose } = req.body;
+
+    if (!name || !email || !purpose) {
+      return res.status(400).json({ message: "Name, email and purpose are required" });
+    }
+
+    if (!req.user?.isNewUser) {
+      return res.status(409).json({ message: "Free access request already submitted" });
+    }
+
+    await transporter.sendMail({
+      from: '"Meet App" <anmolearn2120@gmail.com>',
+      to: "anmolearn2120@gmail.com",
+      subject: "New Free Interview Access Request",
+      text: `Free interview request received.\n\nName: ${name}\nEmail: ${email}\nPurpose: ${purpose}`,
+    });
+
+    if (req.user?.isNewUser) {
+      req.user.isNewUser = false;
+      await req.user.save();
+    }
+
+    return res.status(200).json({ message: "Request submitted successfully" });
+  } catch (err) {
+    console.error("REQUEST FREE ACCESS ERROR:", err);
+    return res.status(500).json({ message: "Request free access failed" });
+  }
+};
