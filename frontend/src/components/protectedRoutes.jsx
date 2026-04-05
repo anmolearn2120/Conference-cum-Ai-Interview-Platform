@@ -37,6 +37,10 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/" />;
   }
 
+  if (user.role === "admin") {
+    return <Navigate to="/admin" />;
+  }
+
   return children;
 }
 

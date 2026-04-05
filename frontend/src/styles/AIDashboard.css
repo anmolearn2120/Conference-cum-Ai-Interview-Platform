@@ -120,6 +120,7 @@
   font: inherit;
   color: inherit;
   cursor: pointer;
+  width: 100%;
 }
 
 .ai-card--free-access:focus-visible {

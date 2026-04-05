@@ -27,6 +27,15 @@ export default function Login() {
   const [error, seterror] = useState("");
   const { login } = useContext(AuthContext);
 
+  const navigateAfterLogin = (loggedInUser) => {
+    if (loggedInUser?.role === "admin") {
+      navigate("/admin");
+      return;
+    }
+
+    navigate("/dashboard");
+  };
+
   const handleChange = (e) => {
     setformData({
       ...formData,
@@ -45,7 +54,7 @@ export default function Login() {
       })
 
       login(response.data);
-      navigate("/dashboard");
+      navigateAfterLogin(response.data?.user);
 
     }
     catch (err) {
@@ -88,7 +97,7 @@ export default function Login() {
       })
 
       login(response.data);
-      navigate("/dashboard");
+      navigateAfterLogin(response.data?.user);
 
     } catch (err) {
       seterror(err.response?.data?.message || "OTP verification Failed");
@@ -106,7 +115,7 @@ export default function Login() {
       //  use context login
       login(response.data);
 
-      navigate("/dashboard");
+      navigateAfterLogin(response.data?.user);
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
     }
@@ -292,23 +301,24 @@ export default function Login() {
 function RevealField({ children, delay = 0 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-20px" });
+  const MotionDiv = motion.div;
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <motion.div
+      <MotionDiv
         className="auth-reveal-box"
         initial={{ scaleX: 0 }}
         animate={isInView ? { scaleX: [0, 1, 1, 0] } : {}}
         transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1], times: [0, 0.4, 0.6, 1] }}
         style={{ originX: 0 }}
       />
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 16 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.45, delay: delay + 0.2, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

@@ -18,13 +18,14 @@ export default function AIDashboard() {
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [showFreeAccessForm, setShowFreeAccessForm] = useState(false);
-  const [showFreeAccessCard, setShowFreeAccessCard] = useState(Boolean(user?.isNewUser));
+  const [hideFreeAccessCard, setHideFreeAccessCard] = useState(false);
   const [freeAccessName, setFreeAccessName] = useState(user?.name || "");
   const [freeAccessEmail, setFreeAccessEmail] = useState(user?.email || "");
   const [freeAccessPurpose, setFreeAccessPurpose] = useState("");
   const [isSubmittingFreeAccess, setIsSubmittingFreeAccess] = useState(false);
 
   const canCreateInterview = user?.role === "interviewer" || user?.role === "admin";
+  const shouldShowFreeAccessCard = Boolean(user?.isNewUser) && !hideFreeAccessCard;
 
   const handleCreateButtonClick = () => {
     if (canCreateInterview) {
@@ -53,7 +54,7 @@ export default function AIDashboard() {
       await API.post("/request-free-access", { name, email, purpose });
 
       setShowFreeAccessForm(false);
-      setShowFreeAccessCard(false);
+      setHideFreeAccessCard(true);
       setFreeAccessPurpose("");
 
       const storedUser = localStorage.getItem("user");
@@ -86,7 +87,7 @@ export default function AIDashboard() {
           </div>
           <div className="ai-cards">
 
-            {showFreeAccessCard && (
+            {shouldShowFreeAccessCard && (
               <button
                 type="button"
                 className="ai-card ai-card--free-access"
